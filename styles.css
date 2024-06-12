@@ -1,0 +1,70 @@
+/* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+    margin: 0;
+}
+
+.container {
+    text-align: center;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.controls {
+    margin-bottom: 20px;
+}
+
+#timer {
+    font-size: 2em;
+    margin: 20px 0;
+}
+
+#saved-segments {
+    text-align: left;
+    margin-top: 20px;
+}
+
+.segment {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.segment button {
+    background-color: #ff4d4d;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.red {
+    background-color: #ffcccc;
+}
+
+.green {
+    background-color: #ccffcc;
+}
+
+.blue {
+    background-color: #ccccff;
+}
+
+.yellow {
+    background-color: #ffffcc;
+}
+
+.orange {
+    background-color: #ffcc99;
+}

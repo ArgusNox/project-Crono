@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project-Crono</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Project Crono - Agustin Brizuela</h1>
+        <div class="controls">
+            <input type="text" id="activity" placeholder="Actividad">
+            <select id="colorPicker">
+                <option value="red">Rojo</option>
+                <option value="green">Verde</option>
+                <option value="blue">Azul</option>
+                <option value="yellow">Amarillo</option>
+                <option value="orange">Naranja</option>
+            </select>
+            <button id="start">Iniciar</button>
+            <button id="stop">Detener</button>
+            <button id="reset">Reiniciar</button>
+            <button id="save">Guardar</button>
+        </div>
+        <div id="timer">00:00:00</div>
+        <h2>Segmentos Guardados</h2>
+        <div id="saved-segments"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
