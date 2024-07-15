@@ -1,4 +1,3 @@
-// script.js
 document.addEventListener("DOMContentLoaded", () => {
     const timerElement = document.getElementById('timer');
     const activityInput = document.getElementById('activity');
@@ -8,7 +7,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let startTime, updatedTime, difference, tInterval;
     let running = false;
     let segments = [];
-    
+    let unsavedChanges = false;
+
     const startButton = document.getElementById('start');
     const stopButton = document.getElementById('stop');
     const resetButton = document.getElementById('reset');
@@ -16,10 +16,25 @@ document.addEventListener("DOMContentLoaded", () => {
     
     startButton.addEventListener('click', startTimer);
     stopButton.addEventListener('click', stopTimer);
-    resetButton.addEventListener('click', resetTimer);
+    resetButton.addEventListener('click', () => {
+        if (unsavedChanges) {
+            const confirmReset = confirm("Tienes cambios no guardados. ¿Estás seguro de que quieres reiniciar el cronómetro sin guardar?");
+            if (confirmReset) {
+                resetTimer();
+                unsavedChanges = false;
+            }
+        } else {
+            resetTimer();
+        }
+    });
     saveButton.addEventListener('click', saveSegment);
 
     function startTimer() {
+        const activity = activityInput.value.trim();
+        if (!activity) {
+            alert("Debes escribir el nombre de la actividad antes de iniciar el cronómetro.");
+            return;
+        }
         if (!running) {
             startTime = new Date().getTime() - (difference || 0);
             tInterval = setInterval(updateTimer, 1000);
@@ -31,6 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (running) {
             clearInterval(tInterval);
             running = false;
+            unsavedChanges = true;
         }
     }
 
@@ -54,17 +70,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function saveSegment() {
         const activity = activityInput.value.trim();
-        if (!activity || !difference) return;
+        if (!activity) {
+            alert("No puedes guardar sin escribir la actividad.");
+            return;
+        }
+        if (!difference) return;
 
         const time = timerElement.innerHTML;
         const color = colorPicker.value;
         
-        // Guardamos solo si hay una actividad
         segments.push({ time: difference, activity, color });
 
         saveSegmentsToLocalStorage();
         activityInput.value = '';
-        resetTimer(); // Reseteamos el temporizador después de guardar
+        resetTimer();
+        unsavedChanges = false; // Reset unsaved changes
     }
 
     function saveSegmentsToLocalStorage() {
@@ -77,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (existingSegment) {
                 existingSegment.time += segment.time;
             } else {
-                savedSegments[date].push(segment);
+                savedSegments[date].unshift(segment); // Add new segments to the start of the array
             }
         });
 
@@ -92,13 +112,12 @@ document.addEventListener("DOMContentLoaded", () => {
         Object.keys(savedSegments).forEach(date => {
             const dateDiv = document.createElement('div');
             dateDiv.innerHTML = `<h3>${date}</h3>`;
-            savedSegmentsContainer.appendChild(dateDiv);
+            savedSegmentsContainer.prepend(dateDiv);
 
             savedSegments[date].forEach((segment, index) => {
                 const segmentDiv = document.createElement('div');
                 segmentDiv.className = `segment ${segment.color}`;
                 
-                // Convertir el tiempo acumulado a formato HH:MM:SS
                 const time = convertMsToTime(segment.time);
                 segmentDiv.innerHTML = `${time} - ${segment.activity} <button onclick="deleteSegment('${date}', ${index})">Eliminar</button>`;
                 
