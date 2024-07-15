@@ -150,7 +150,16 @@ document.addEventListener("DOMContentLoaded", () => {
         if (savedSegments[date] && savedSegments[date][index]) {
             const newActivity = prompt("Editar actividad:", savedSegments[date][index].activity);
             if (newActivity) {
-                savedSegments[date][index].activity = newActivity.trim();
+                const trimmedNewActivity = newActivity.trim();
+                const existingSegment = savedSegments[date].find((segment, idx) => segment.activity === trimmedNewActivity && idx !== index);
+
+                if (existingSegment) {
+                    existingSegment.time += savedSegments[date][index].time;
+                    savedSegments[date].splice(index, 1);
+                } else {
+                    savedSegments[date][index].activity = trimmedNewActivity;
+                }
+
                 localStorage.setItem('segments', JSON.stringify(savedSegments));
                 displaySavedSegments();
             }
