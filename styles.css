@@ -68,3 +68,34 @@ body {
 .orange {
     background-color: #ffcc99;
 }
+
+.segment {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.segment button {
+    margin-left: 1rem;
+}
+
+.segment .edit-button {
+    background-color: rgb(29, 182, 29);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+}
+
+.segment .delete-button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    margin-left: auto;
+}
+
+.segment button:hover {
+    opacity: 0.8;
+}

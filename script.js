@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 segmentDiv.className = `segment ${segment.color}`;
                 
                 const time = convertMsToTime(segment.time);
-                segmentDiv.innerHTML = `${time} - ${segment.activity} <button onclick="deleteSegment('${date}', ${index})">Eliminar</button>`;
+                segmentDiv.innerHTML = `${time} - ${segment.activity} <button class="delete-button" onclick="deleteSegment('${date}', ${index})">Eliminar</button> <button class="edit-button" onclick="editSegment('${date}', ${index})">Editar</button>`;
                 
                 dateDiv.appendChild(segmentDiv);
             });
@@ -142,6 +142,18 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             localStorage.setItem('segments', JSON.stringify(savedSegments));
             displaySavedSegments();
+        }
+    };
+
+    window.editSegment = function(date, index) {
+        const savedSegments = JSON.parse(localStorage.getItem('segments')) || {};
+        if (savedSegments[date] && savedSegments[date][index]) {
+            const newActivity = prompt("Editar actividad:", savedSegments[date][index].activity);
+            if (newActivity) {
+                savedSegments[date][index].activity = newActivity.trim();
+                localStorage.setItem('segments', JSON.stringify(savedSegments));
+                displaySavedSegments();
+            }
         }
     };
 
