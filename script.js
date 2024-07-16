@@ -3,6 +3,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const activityInput = document.getElementById('activity');
     const colorPicker = document.getElementById('colorPicker');
     const savedSegmentsContainer = document.getElementById('saved-segments');
+    const editActivityModal = document.getElementById('editActivityModal');
+    const editActivityInput = document.getElementById('editActivityInput');
+    const confirmEditButton = document.getElementById('confirmEditButton');
+    const confirmDeleteModal = document.getElementById('confirmDeleteModal');
+    const confirmDeleteButton = document.getElementById('confirmDeleteButton');
     
     let startTime, updatedTime, difference, tInterval;
     let running = false;
@@ -17,22 +22,14 @@ document.addEventListener("DOMContentLoaded", () => {
     startButton.addEventListener('click', startTimer);
     stopButton.addEventListener('click', stopTimer);
     resetButton.addEventListener('click', () => {
-        if (unsavedChanges) {
-            const confirmReset = confirm("Tienes cambios no guardados. ¿Estás seguro de que quieres reiniciar el cronómetro sin guardar?");
-            if (confirmReset) {
-                resetTimer();
-                unsavedChanges = false;
-            }
-        } else {
-            resetTimer();
-        }
+        showResetConfirmation();
     });
     saveButton.addEventListener('click', saveSegment);
 
     function startTimer() {
         const activity = activityInput.value.trim();
         if (!activity) {
-            alert("Debes escribir el nombre de la actividad antes de iniciar el cronómetro.");
+            showAlert("Debes escribir el nombre de la actividad antes de iniciar el cronómetro.", 'danger');
             return;
         }
         if (!running) {
@@ -55,6 +52,19 @@ document.addEventListener("DOMContentLoaded", () => {
         running = false;
         difference = 0;
         timerElement.innerHTML = "00:00:00";
+        unsavedChanges = false;
+    }
+
+    function showResetConfirmation() {
+        const message = "¿Estás seguro de que quieres reiniciar el cronómetro?";
+        const type = 'warning';
+        const showConfirmation = true; // Indicar que se debe mostrar la confirmación
+        const callback = (confirmed) => {
+            if (confirmed) {
+                resetTimer();
+            }
+        };
+        showAlert(message, type, showConfirmation, callback);
     }
 
     function updateTimer() {
@@ -64,36 +74,45 @@ document.addEventListener("DOMContentLoaded", () => {
         const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-        
+
         timerElement.innerHTML = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
 
     function saveSegment() {
         const activity = activityInput.value.trim();
         if (!activity) {
-            alert("No puedes guardar sin escribir la actividad.");
+            showAlert("No puedes guardar sin escribir la actividad.", 'info');
             return;
         }
-        if (!difference) return;
-
-        const time = timerElement.innerHTML;
-        const color = colorPicker.value;
+        if (!running) {
+            showAlert("No puedes guardar sin iniciar el cronómetro.", 'info');
+            return;
+        }
         
-        segments.push({ time: difference, activity, color });
+        const color = colorPicker.value;
 
+        const segment = {
+            activity,
+            color,
+            time: difference,
+        };
+
+        segments.push(segment);
         saveSegmentsToLocalStorage();
-        activityInput.value = '';
+        showAlert("Segmento guardado exitosamente.", 'success');
         resetTimer();
-        unsavedChanges = false; // Reset unsaved changes
+        activityInput.value = '';
     }
 
     function saveSegmentsToLocalStorage() {
         const savedSegments = JSON.parse(localStorage.getItem('segments')) || {};
-        const date = new Date().toISOString().split('T')[0];
+        const today = new Date();
+        const date = today.toLocaleDateString();
+
         if (!savedSegments[date]) savedSegments[date] = [];
 
         segments.forEach(segment => {
-            const existingSegment = savedSegments[date].find(savedSegment => savedSegment.activity === segment.activity);
+            const existingSegment = savedSegments[date].find(s => s.activity === segment.activity && s.color === segment.color);
             if (existingSegment) {
                 existingSegment.time += segment.time;
             } else {
@@ -116,10 +135,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             savedSegments[date].forEach((segment, index) => {
                 const segmentDiv = document.createElement('div');
-                segmentDiv.className = `segment ${segment.color}`;
+                segmentDiv.className = `segment ${segment.color} alert alert-${getBootstrapAlertColor(segment.color)}`;
                 
                 const time = convertMsToTime(segment.time);
-                segmentDiv.innerHTML = `${time} - ${segment.activity} <button class="delete-button" onclick="deleteSegment('${date}', ${index})">Eliminar</button> <button class="edit-button" onclick="editSegment('${date}', ${index})">Editar</button>`;
+                segmentDiv.innerHTML = `${time} - ${segment.activity} <button class="delete-button btn btn-danger" onclick="confirmDeleteSegment('${date}', ${index})">Eliminar</button> <button class="edit-button btn btn-light" onclick="editSegment('${date}', ${index})">Editar</button>`;
                 
                 dateDiv.appendChild(segmentDiv);
             });
@@ -132,6 +151,25 @@ document.addEventListener("DOMContentLoaded", () => {
         const seconds = Math.floor((milliseconds % (1000 * 60)) / 1000);
         return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
+
+    window.confirmDeleteSegment = function(date, index) {
+        // Guardar el índice y la fecha actual en atributos del modal de confirmación
+        confirmDeleteModal.setAttribute('data-date', date);
+        confirmDeleteModal.setAttribute('data-index', index);
+        // Mostrar el modal de confirmación
+        $('#confirmDeleteModal').modal('show');
+    };
+
+    // Asociar función de eliminar con el botón dentro del modal de confirmación
+    confirmDeleteButton.addEventListener('click', function() {
+        const date = confirmDeleteModal.getAttribute('data-date');
+        const index = parseInt(confirmDeleteModal.getAttribute('data-index'));
+
+        deleteSegment(date, index);
+
+        // Ocultar el modal después de eliminar
+        $('#confirmDeleteModal').modal('hide');
+    });
 
     window.deleteSegment = function(date, index) {
         const savedSegments = JSON.parse(localStorage.getItem('segments')) || {};
@@ -148,23 +186,100 @@ document.addEventListener("DOMContentLoaded", () => {
     window.editSegment = function(date, index) {
         const savedSegments = JSON.parse(localStorage.getItem('segments')) || {};
         if (savedSegments[date] && savedSegments[date][index]) {
-            const newActivity = prompt("Editar actividad:", savedSegments[date][index].activity);
-            if (newActivity) {
-                const trimmedNewActivity = newActivity.trim();
-                const existingSegment = savedSegments[date].find((segment, idx) => segment.activity === trimmedNewActivity && idx !== index);
+            // Abrir el modal de edición
+            $('#editActivityModal').modal('show');
 
-                if (existingSegment) {
-                    existingSegment.time += savedSegments[date][index].time;
-                    savedSegments[date].splice(index, 1);
-                } else {
-                    savedSegments[date][index].activity = trimmedNewActivity;
+            // Rellenar el campo del modal con la actividad actual
+            editActivityInput.value = savedSegments[date][index].activity;
+
+            // Función para guardar los cambios desde el modal
+            confirmEditButton.onclick = function() {
+                const newActivity = editActivityInput.value.trim();
+                if (newActivity !== savedSegments[date][index].activity) {
+                    const existingSegment = savedSegments[date].find((segment, idx) => segment.activity === newActivity && idx !== index);
+
+                    if (existingSegment) {
+                        existingSegment.time += savedSegments[date][index].time;
+                        savedSegments[date].splice(index, 1);
+                    } else {
+                        savedSegments[date][index].activity = newActivity;
+                    }
+
+                    localStorage.setItem('segments', JSON.stringify(savedSegments));
+                    displaySavedSegments();
+
+                    // Mostrar alerta de edición con estilos de Bootstrap
+                    showAlert("Actividad editada exitosamente.", 'info');
                 }
 
-                localStorage.setItem('segments', JSON.stringify(savedSegments));
-                displaySavedSegments();
-            }
+                // Cerrar el modal después de editar
+                $('#editActivityModal').modal('hide');
+            };
         }
     };
+
+    function showAlert(message, type, showConfirmation = false, callback) {
+        const alertContainer = document.querySelector('.alert-container');
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show fade-in`;
+        alertDiv.role = 'alert';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div class="alert-progress">
+                <div class="alert-progress-bar"></div>
+            </div>
+        `;
+        
+        if (showConfirmation) {
+            alertDiv.innerHTML += `
+                <button id="confirm-yes" class="btn btn-danger bototonesReinicio">Sí</button>
+                <button id="confirm-no" class="btn btn-secondary bototonesReinicio">No</button>
+            `;
+        }
+
+        alertContainer.prepend(alertDiv);
+        setTimeout(() => {
+            alertDiv.querySelector('.alert-progress-bar').style.width = '100%';
+        }, 10);
+
+        if (showConfirmation) {
+            const timeoutId = setTimeout(() => {
+                $(alertDiv).alert('close');
+                if (callback) callback(false);
+            }, 7000);
+
+            alertDiv.querySelector('#confirm-yes').addEventListener('click', () => {
+                clearTimeout(timeoutId);
+                $(alertDiv).alert('close');
+                if (callback) callback(true);
+            });
+
+            alertDiv.querySelector('#confirm-no').addEventListener('click', () => {
+                clearTimeout(timeoutId);
+                $(alertDiv).alert('close');
+                if (callback) callback(false);
+            });
+        } else {
+            setTimeout(() => {
+                $(alertDiv).alert('close');
+                if (callback) callback();
+            }, 7000);
+        }
+    }
+
+    function getBootstrapAlertColor(color) {
+        switch(color) {
+            case 'red': return 'danger';
+            case 'green': return 'success';
+            case 'blue': return 'primary';
+            case 'yellow': return 'warning';
+            case 'orange': return 'warning';
+            default: return 'secondary';
+        }
+    }
 
     displaySavedSegments();
 });
