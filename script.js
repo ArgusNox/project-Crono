@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
             showAlert("No puedes guardar sin escribir la actividad.", 'info');
             return;
         }
-        if (!running) {
+        if (!difference || difference <= 0) {
             showAlert("No puedes guardar sin iniciar el cronómetro.", 'info');
             return;
         }
