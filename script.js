@@ -282,4 +282,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     displaySavedSegments();
+
+    window.addEventListener('beforeunload', function (e) {
+        // Cancela el evento como estándar.
+        e.preventDefault();
+        // Chrome requiere que se establezca returnValue.
+        e.returnValue = '';
+        return '¿Estás seguro de que quieres cerrar esta página?';
+    });
+    
 });
