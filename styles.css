@@ -3,7 +3,6 @@ body, html {
     padding: 0;
     height: 100%;
     width: 100%;
-    overflow: hidden; /* Prevenir el desplazamiento externo */
 }
 
 .container {
@@ -12,8 +11,6 @@ body, html {
     align-items: center;
     height: 100%;
     overflow: hidden;
-    padding: 1rem;
-    box-sizing: border-box;
 }
 
 .controls {
@@ -24,10 +21,9 @@ body, html {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%;
+    height: 100%;
     overflow-y: auto;
-    max-height: 50vh; /* Limitar la altura para permitir el desplazamiento */
-    padding-bottom: 1rem; /* Asegurar que haya espacio al final para el desplazamiento */
+    width: 100%;
 }
 
 #saved-segments {
@@ -45,14 +41,13 @@ body {
     margin: 0;
 }
 
-.container.mt-5 {
+.container {
     width: auto;
     text-align: center;
     background: white;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    overflow-y: auto; /* Permitir el desplazamiento interno */
 }
 
 .controls {
@@ -78,7 +73,6 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap; /* Para permitir que los botones se ajusten en pantallas pequeñas */
 }
 
 .segment button {
@@ -88,7 +82,6 @@ body {
     padding: 5px 10px;
     cursor: pointer;
     border-radius: 4px;
-    margin-top: 5px; /* Espacio entre botones en pantallas pequeñas */
 }
 
 .red {
@@ -115,7 +108,6 @@ body {
     display: flex;
     align-items: center;
     margin-bottom: 0.5rem;
-    flex-wrap: wrap; /* Ajuste para móviles */
 }
 
 .segment button {
@@ -157,15 +149,15 @@ body {
 
 .alert-container {
     position: fixed;
-    top: 0;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%);
     z-index: 9999;
-    width: fit-content;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
     padding: 20px;
     box-sizing: border-box;
-    margin-top: 13%;
-    max-width: 90%; /* Ajuste para móviles */
 }
 
 .alert-dismissible .close {
@@ -251,9 +243,10 @@ body {
 /* Media Queries */
 @media (max-width: 768px) {
     .container {
-        width: 90%;
-        padding: 1rem;
-        overflow-y: auto; /* Permitir el desplazamiento interno en móviles */
+        width: 100%;
+        padding: 0;
+        background: none;
+        box-shadow: none;
     }
 
     .controls {
@@ -270,39 +263,30 @@ body {
         font-size: 2rem;
     }
 
-    .segment {
-        flex-direction: column; /* Ajuste para móviles */
-        align-items: flex-start; /* Ajuste para móviles */
+    .modal-dialog {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
     }
 
-    .segment button {
-        width: 100%; /* Ajuste para móviles */
-        margin: 5px 0; /* Ajuste para móviles */
+    .modal-content {
+        width: 90%;
     }
 
     .alert-container {
-        width: 90%; /* Ajuste para móviles */
-        padding: 1rem; /* Ajuste para móviles */
-        left: 5%; /* Centrado para móviles */
-        transform: none; /* Ajuste para móviles */
-        margin-top: 5%; /* Ajuste para móviles */
+        width: 90%;
     }
+    body > div.container.mt-5 > h1{
+        font-size: 23px;
+            }
 
-    .modal-dialog {
-        margin: 1.75rem auto; /* Ajuste para móviles */
-        max-width: 90%; /* Ajuste para móviles */
-    }
+            body > div.container.mt-5 > h2{
+                margin-top: 0rem !important;
+            }
 
-    #saved-segments-container {
-        max-height: 50vh; /* Ajuste para asegurar que haya espacio para desplazarse en móviles */
-        overflow-y: auto; /* Permitir desplazamiento */
-    }
-
-    #saved-segments h3 {
-        font-size: 1.2rem; /* Ajustar el tamaño de la fuente para móviles */
-    }
-
-    .segmentosTitulo {
-        font-size: 1.5rem; /* Ajuste para móviles */
-    }
+            #saved-segments > div > h3{
+                font-size: 18px;
+            }
 }
