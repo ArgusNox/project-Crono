@@ -2,6 +2,8 @@ body, html {
     margin: 0;
     padding: 0;
     height: 100%;
+    width: 100%;
+    overflow: hidden; /* Prevenir el desplazamiento externo */
 }
 
 .container {
@@ -10,6 +12,8 @@ body, html {
     align-items: center;
     height: 100%;
     overflow: hidden;
+    padding: 1rem;
+    box-sizing: border-box;
 }
 
 .controls {
@@ -20,9 +24,10 @@ body, html {
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 100%;
-    overflow-y: auto;
     width: 100%;
+    overflow-y: auto;
+    max-height: 50vh; /* Limitar la altura para permitir el desplazamiento */
+    padding-bottom: 1rem; /* Asegurar que haya espacio al final para el desplazamiento */
 }
 
 #saved-segments {
@@ -40,13 +45,14 @@ body {
     margin: 0;
 }
 
-.container {
+.container.mt-5 {
     width: auto;
     text-align: center;
     background: white;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow-y: auto; /* Permitir el desplazamiento interno */
 }
 
 .controls {
@@ -72,6 +78,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap; /* Para permitir que los botones se ajusten en pantallas pequeñas */
 }
 
 .segment button {
@@ -81,6 +88,7 @@ body {
     padding: 5px 10px;
     cursor: pointer;
     border-radius: 4px;
+    margin-top: 5px; /* Espacio entre botones en pantallas pequeñas */
 }
 
 .red {
@@ -107,6 +115,7 @@ body {
     display: flex;
     align-items: center;
     margin-bottom: 0.5rem;
+    flex-wrap: wrap; /* Ajuste para móviles */
 }
 
 .segment button {
@@ -138,11 +147,11 @@ body {
     transition: all 0.2s ease-in-out;
 }
 
-.bototonesReinicio{
-margin-top: 1rem;
+.bototonesReinicio {
+    margin-top: 1rem;
 }
 
-#confirm-no{
+#confirm-no {
     margin-left: 0.5rem;
 }
 
@@ -156,6 +165,7 @@ margin-top: 1rem;
     padding: 20px;
     box-sizing: border-box;
     margin-top: 13%;
+    max-width: 90%; /* Ajuste para móviles */
 }
 
 .alert-dismissible .close {
@@ -197,66 +207,63 @@ margin-top: 1rem;
     animation-duration: 1s;
     -webkit-animation-timing-function: ease-in-out; /* Función de temporización */
     animation-timing-function: ease-in-out;
-  }
+}
 
-  .segmentosTitulo{
-font-size: 20px;
+.segmentosTitulo {
+    font-size: 20px;
     margin-bottom: -16px;
-  }
-  @-webkit-keyframes pulse {
+}
+
+@-webkit-keyframes pulse {
     from {
-      -webkit-transform: scale3d(1, 1, 1);
-      transform: scale3d(1, 1, 1);
+        -webkit-transform: scale3d(1, 1, 1);
+        transform: scale3d(1, 1, 1);
     }
-    
+
     50% {
-      -webkit-transform: scale3d(1.05, 1.05, 1.05);
-      transform: scale3d(1.05, 1.05, 1.05);
+        -webkit-transform: scale3d(1.05, 1.05, 1.05);
+        transform: scale3d(1.05, 1.05, 1.05);
     }
-    
+
     to {
-      -webkit-transform: scale3d(1, 1, 1);
-      transform: scale3d(1, 1, 1);
+        -webkit-transform: scale3d(1, 1, 1);
+        transform: scale3d(1, 1, 1);
     }
-  }
-  
-  @keyframes pulse {
+}
+
+@keyframes pulse {
     from {
-      -webkit-transform: scale3d(1, 1, 1);
-      transform: scale3d(1, 1, 1);
+        -webkit-transform: scale3d(1, 1, 1);
+        transform: scale3d(1, 1, 1);
     }
-    
+
     50% {
-      -webkit-transform: scale3d(1.05, 1.05, 1.05);
-      transform: scale3d(1.05, 1.05, 1.05);
+        -webkit-transform: scale3d(1.05, 1.05, 1.05);
+        transform: scale3d(1.05, 1.05, 1.05);
     }
-    
+
     to {
-      -webkit-transform: scale3d(1, 1, 1);
-      transform: scale3d(1, 1, 1);
+        -webkit-transform: scale3d(1, 1, 1);
+        transform: scale3d(1, 1, 1);
     }
-  }
+}
 
-
-  @media (max-width: 768px) {
-
-    body > div.container.mt-5 > h1{
-font-size: 23px;
-    }
-
-    #colorPicker{
-        margin: 1rem 0 1rem 0 !important;
-    }
-
-    body > div.container.mt-5 > h2{
-        margin-top: 0 !important;
-        font-size: 20px; 
-    }
-
+/* Media Queries */
+@media (max-width: 768px) {
     .container {
-        margin-bottom: 15%;
+        width: 90%;
+        padding: 1rem;
+        overflow-y: auto; /* Permitir el desplazamiento interno en móviles */
+    }
+
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .controls .form-control, .controls .btn {
         width: 100%;
-      
+        margin: 0.5rem 0;
     }
 
     #timer {
