@@ -236,3 +236,66 @@ font-size: 20px;
       transform: scale3d(1, 1, 1);
     }
   }
+
+
+  @media (max-width: 768px) {
+
+    body > div.container.mt-5 > h1{
+font-size: 23px;
+    }
+
+    #colorPicker{
+        margin: 1rem 0 1rem 0 !important;
+    }
+
+    body > div.container.mt-5 > h2{
+        margin-top: 0 !important;
+        font-size: 20px; 
+    }
+
+    .container {
+        margin-bottom: 15%;
+        width: 100%;
+      
+    }
+
+    #timer {
+        font-size: 2rem;
+    }
+
+    .segment {
+        flex-direction: column; /* Ajuste para móviles */
+        align-items: flex-start; /* Ajuste para móviles */
+    }
+
+    .segment button {
+        width: 100%; /* Ajuste para móviles */
+        margin: 5px 0; /* Ajuste para móviles */
+    }
+
+    .alert-container {
+        width: 90%; /* Ajuste para móviles */
+        padding: 1rem; /* Ajuste para móviles */
+        left: 5%; /* Centrado para móviles */
+        transform: none; /* Ajuste para móviles */
+        margin-top: 5%; /* Ajuste para móviles */
+    }
+
+    .modal-dialog {
+        margin: 1.75rem auto; /* Ajuste para móviles */
+        max-width: 90%; /* Ajuste para móviles */
+    }
+
+    #saved-segments-container {
+        max-height: 50vh; /* Ajuste para asegurar que haya espacio para desplazarse en móviles */
+        overflow-y: auto; /* Permitir desplazamiento */
+    }
+
+    #saved-segments h3 {
+        font-size: 1.2rem; /* Ajustar el tamaño de la fuente para móviles */
+    }
+
+    .segmentosTitulo {
+        font-size: 1.5rem; /* Ajuste para móviles */
+    }
+}
