@@ -297,7 +297,15 @@ body {
         gap: 1rem;
     }
 
-    #addActivity{
-        z-index: 9999999;
+     .controls .btn {
+        height: 3rem;
     }
+    .controls .form-control {
+        height: 2.5rem;
+    }
+
+    #addActivity{
+        margin-bottom: 1rem;
+    }
+
 }
