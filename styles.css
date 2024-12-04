@@ -296,4 +296,8 @@ body {
     #addActivityForm .form-inline{
         gap: 1rem;
     }
+
+    #addActivity{
+        z-index: 9999999;
+    }
 }
