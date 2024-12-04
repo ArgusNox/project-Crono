@@ -290,3 +290,10 @@ body {
                 font-size: 18px;
             }
 }
+
+@media only screen and (max-width: 900px) { 
+  
+    #addActivityForm .form-inline{
+        gap: 1rem;
+    }
+}

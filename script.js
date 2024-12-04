@@ -292,3 +292,147 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     
 });
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    const addActivityButton = document.getElementById('addActivity'); // Botón para abrir el modal
+    const saveNewActivityButton = document.getElementById('saveNewActivity'); // Botón "Guardar" del modal
+    const savedSegmentsContainer = document.getElementById('saved-segments'); // Contenedor de segmentos guardados
+
+    // Evento para abrir el modal
+    addActivityButton.addEventListener('click', () => {
+        $('#addActivityModal').modal('show'); // Mostrar el modal
+    });
+
+    // Evento para guardar la nueva actividad desde el modal
+    saveNewActivityButton.addEventListener('click', () => {
+        const name = document.getElementById('newActivityName').value.trim();
+        const hours = parseInt(document.getElementById('newActivityHours').value, 10) || 0;
+        const minutes = parseInt(document.getElementById('newActivityMinutes').value, 10) || 0;
+        const seconds = parseInt(document.getElementById('newActivitySeconds').value, 10) || 0;
+        const rawDate = document.getElementById('newActivityDate').value; // Fecha en formato YYYY-MM-DD
+        const color = document.getElementById('newActivityColor').value; // Color seleccionado
+
+        // Validaciones
+        if (!name || !rawDate || (hours === 0 && minutes === 0 && seconds === 0)) {
+            showAlert("Todos los campos son obligatorios y la duración debe ser mayor a 0.", "danger");
+            return;
+        }
+
+        // Convertir la fecha a formato DD/MM/YYYY
+        const dateParts = rawDate.split("-");
+        const formattedDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`; // DD/MM/YYYY
+
+        // Calcular tiempo en milisegundos
+        const milliseconds = ((hours * 60 * 60) + (minutes * 60) + seconds) * 1000;
+
+        const newSegment = {
+            activity: name,
+            time: milliseconds,
+            color: color // Asignar el color seleccionado
+        };
+
+        // Guardar el segmento en localStorage
+        saveSegmentToLocalStorage(formattedDate, newSegment);
+
+        // Actualizar la visualización
+        displaySavedSegments();
+
+        // Cerrar el modal
+        $('#addActivityModal').modal('hide');
+
+        // Limpiar los campos del modal
+        document.getElementById('newActivityName').value = '';
+        document.getElementById('newActivityHours').value = '';
+        document.getElementById('newActivityMinutes').value = '';
+        document.getElementById('newActivitySeconds').value = '';
+        document.getElementById('newActivityDate').value = '';
+        document.getElementById('newActivityColor').value = 'blue'; // Restablecer el color por defecto
+
+        showAlert("Actividad agregada exitosamente.", "success");
+    });
+
+    // Función para guardar un segmento en localStorage
+    function saveSegmentToLocalStorage(date, segment) {
+        const savedSegments = JSON.parse(localStorage.getItem('segments')) || {};
+
+        if (!savedSegments[date]) savedSegments[date] = [];
+
+        const existingSegment = savedSegments[date].find(s => s.activity === segment.activity);
+
+        if (existingSegment) {
+            existingSegment.time += segment.time; // Sumar tiempo si la actividad ya existe
+        } else {
+            savedSegments[date].unshift(segment); // Agregar nueva actividad
+        }
+
+        localStorage.setItem('segments', JSON.stringify(savedSegments));
+    }
+
+    // Función para mostrar los segmentos guardados
+    function displaySavedSegments() {
+        savedSegmentsContainer.innerHTML = ''; // Limpiar el contenedor
+
+        const savedSegments = JSON.parse(localStorage.getItem('segments')) || {};
+
+        Object.keys(savedSegments).forEach(date => {
+            const dateDiv = document.createElement('div');
+            dateDiv.innerHTML = `<h3>${date}</h3>`;
+            savedSegmentsContainer.prepend(dateDiv);
+
+            savedSegments[date].forEach((segment, index) => {
+                const segmentDiv = document.createElement('div');
+                segmentDiv.className = `segment ${segment.color} alert alert-${getBootstrapAlertColor(segment.color)}`;
+                
+                const time = convertMsToTime(segment.time);
+                segmentDiv.innerHTML = `
+                    ${time} - ${segment.activity}
+                    <button class="delete-button btn btn-danger" onclick="confirmDeleteSegment('${date}', ${index})">Eliminar</button>
+                    <button class="edit-button btn btn-light" onclick="editSegment('${date}', ${index})">Editar</button>`;
+                
+                dateDiv.appendChild(segmentDiv);
+            });
+        });
+    }
+
+    // Función para convertir milisegundos a HH:MM:SS
+    function convertMsToTime(milliseconds) {
+        const hours = Math.floor(milliseconds / (1000 * 60 * 60));
+        const minutes = Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((milliseconds % (1000 * 60)) / 1000);
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    // Función para obtener colores de Bootstrap
+    function getBootstrapAlertColor(color) {
+        switch (color) {
+            case 'red': return 'danger';
+            case 'green': return 'success';
+            case 'blue': return 'primary';
+            case 'yellow': return 'warning';
+            case 'orange': return 'warning';
+            default: return 'secondary';
+        }
+    }
+
+    // Función para mostrar alertas
+    function showAlert(message, type) {
+        const alertContainer = document.querySelector('.alert-container');
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+        alertDiv.role = 'alert';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        `;
+        alertContainer.prepend(alertDiv);
+        setTimeout(() => {
+            $(alertDiv).alert('close');
+        }, 5000);
+    }
+
+    // Mostrar segmentos al cargar la página
+    displaySavedSegments();
+});
